@@ -32,7 +32,7 @@ const addUser = (req, res) => {
         else {
             pool.query(addUserQuery, [userId, fullName, email, picture], (error, result) => {
                 if (error) res.status(400).json(error);
-                else res.status(200).send('Create account successfully!');
+                else res.status(200).send({ message: 'Create account successfully!' });
             });
         }
     });

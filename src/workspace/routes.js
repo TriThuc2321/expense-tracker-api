@@ -1,10 +1,11 @@
 const { Router } = require('express');
-const { getByUserId, addWorkspace } = require('./controller');
+const { getByUserEmail, addWorkspace, addWorkspaceDetail } = require('./controller');
 
 const router = Router();
 
-router.get('/userId/:userId', getByUserId);
+router.get('/email/:email', getByUserEmail);
 
 router.post('/', addWorkspace);
+router.post('/detail', addWorkspaceDetail);
 
 module.exports = router;
