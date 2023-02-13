@@ -1,20 +1,24 @@
 const pool = require('../../db');
-const { getAllQuery, getByIdQuery, checkEmailExistQuery, addUserQuery } = require('./queries');
+const { getAllQuery, getByEmailQuery, checkEmailExistQuery, addUserQuery } = require('./queries');
 
 const getAll = (req, res) => {
     pool.query(getAllQuery, (err, result) => {
         if (err) res.status(400).json({ message: err, status: 'FAIL' });
         else if (result) {
-            res.status(200).json(result.rows);
+            if (result) res.status(200).json(result.rows);
         } else return null;
     });
 };
 
-const getById = (req, res) => {
-    const id = req.params.id;
-    pool.query(getByIdQuery, [id], (err, result) => {
+const getByEmail = (req, res) => {
+    const email = req.params.email;
+    pool.query(getByEmailQuery, [email], (err, result) => {
         if (err) res.status(400).json({ message: err, status: 'FAIL' });
-        else res.status(200).json(result.rows);
+        else {
+            result.rows.length
+                ? res.status(200).json({ status: 'SUCCESS', data: result.rows[0] })
+                : res.status(200).json({ status: 'SUCCESS', data: null });
+        }
     });
 };
 
@@ -47,4 +51,4 @@ const addUser = (req, res) => {
     });
 };
 
-module.exports = { getAll, getById, addUser, checkEmailExisted };
+module.exports = { getAll, getByEmail, addUser, checkEmailExisted };
