@@ -1,4 +1,8 @@
 const express = require('express');
+require('./firebaseConfig.js');
+
+const { authorizationJWT } = require('./src/utils');
+
 const userRoutes = require('./src/user/routes');
 const workspaceRoutes = require('./src/workspace/routes');
 
@@ -7,8 +11,7 @@ const cors = require('cors');
 
 const PORT = process.env.PORT || 8000;
 
-app.use(cors());
-app.use(express.json());
+app.use(cors(), express.json(), authorizationJWT);
 
 app.get('/', (req, res) => {
     res.send('Backend is running');
