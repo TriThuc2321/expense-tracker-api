@@ -101,17 +101,28 @@ const addWorkspaceDetail = (req, res) => {
 
 const deleteWorkspace = async (req, res) => {
     const { workspaceId } = req.params;
+    const host = res.locals.email;
 
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
 
-        await client.query(deleteWorkspaceDetailQuery, [workspaceId]);
-        await client.query(deleteWorkspaceQuery, [workspaceId]);
+        const workspace = await client.query(checkWorkspaceExistedQuery, [workspaceId]);
+        if (workspace.rowCount > 0) {
+            const { email } = workspace.rows[0];
+            if (email == host) {
+                await client.query(deleteWorkspaceDetailQuery, [workspaceId]);
+                await client.query(deleteWorkspaceQuery, [workspaceId]);
 
-        await client.query('COMMIT');
+                await client.query('COMMIT');
 
-        res.status(200).json({ message: 'Delete workspace successfully!', status: 'SUCCESS' });
+                res.status(200).json({ message: 'Delete workspace successfully', status: 'SUCCESS' });
+            } else {
+                res.status(200).json({ message: 'Only host can delete workspace', status: 'FAIL' });
+            }
+        } else {
+            res.status(200).json({ message: 'Workspace does not exist', status: 'FAIL' });
+        }
     } catch (error) {
         await client.query('ROLLBACK');
         res.status(400).json({ message: error, status: 'FAIL' });
@@ -128,7 +139,7 @@ const updateWorkspace = async (req, res) => {
         await client.query('BEGIN');
 
         const workspaceExist = await client.query(checkWorkspaceExistedQuery, [workspaceId]);
-        if (workspaceExist.rows.length > 0) {
+        if (workspaceExist.rowCount > 0) {
             await client.query(updateWorkspaceQuery, [workspaceId, workspaceName]);
             await client.query(deleteWorkspaceDetailQuery, [workspaceId]);
             emails.every(async (item) => {

@@ -9,11 +9,11 @@ const authorizationJWT = async (req, res, next) => {
         getAuth()
             .verifyIdToken(accessToken)
             .then((decodedToken) => {
-                res.locals.uid = decodedToken.uid;
+                res.locals.email = decodedToken.email;
+
                 next();
             })
             .catch((err) => {
-                console.log({ err });
                 return res.status(403).json({ message: 'Forbidden', error: err });
             });
     } else {
