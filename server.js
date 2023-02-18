@@ -1,7 +1,7 @@
 const express = require('express');
 require('./firebaseConfig.js');
 
-const { authorizationJWT } = require('./src/utils');
+const { authorizationJWT } = require('./src/middleware');
 
 const userRoutes = require('./src/user/routes');
 const workspaceRoutes = require('./src/workspace/routes');
